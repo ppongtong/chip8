@@ -1,0 +1,47 @@
+:root {
+  --primary-color: #283593;
+  --primary-light-color: #5f5fc4;
+  --primary-dark-color: #001064;
+
+  --secondary-color: #424242;
+  --secondary-light-color: #6d6d6d;
+  --secondary-dark-color: #1b1b1b;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background: var(--secondary-color);
+  color: #ffffff;
+}
+
+a {
+  color: #ffffff;
+}
+
+.font-200 {
+  font-size: 8px;
+}
+.font-300 {
+  font-size: 12px;
+}
+
+.toolbar {
+  font-family: "Roboto", sans-serif;
+  background: var(--primary-dark-color);
+  font-weight: 100;
+
+  padding: 16px 16px;
+
+  display: flex;
+  justify-content: space-between;
+}
+
+.screen {
+  display: flex;
+  padding: 32px 16px;
+  justify-content: center;
+}
+
+.screen-bg {
+  background: var(--secondary-dark-color);
+}
