@@ -1,16 +1,24 @@
 :root {
-  --primary-color: #283593;
-  --primary-light-color: #5f5fc4;
-  --primary-dark-color: #001064;
+  --primary-color: #1eb980;
+  --primary-dark-color: #045d56;
 
-  --secondary-color: #424242;
-  --secondary-light-color: #6d6d6d;
-  --secondary-dark-color: #1b1b1b;
+  --orange-300-color: #ff6859;
+  --yellow-300-color: #ffcf44;
+  --purple-200-color: #b15dff;
+
+  --register-width: 50px;
+
+  --opcode-width: 35px;
+
+  --black-color: #212121;
+  --background-color: #33323c;
+  --card-background: #37363f;
+  --primary-background: #27262f;
 }
 
 body {
   font-family: "Roboto", sans-serif;
-  background: var(--secondary-color);
+  background: var(--background-color);
   color: #ffffff;
 }
 
@@ -25,9 +33,9 @@ a {
   font-size: 12px;
 }
 
-.toolbar {
+.header {
   font-family: "Roboto", sans-serif;
-  background: var(--primary-dark-color);
+  background: var(--black-color);
   font-weight: 100;
 
   padding: 16px 16px;
@@ -36,12 +44,222 @@ a {
   justify-content: space-between;
 }
 
-.screen {
+.container {
+  padding: 16px 16px;
+}
+
+.content {
   display: flex;
-  padding: 32px 16px;
-  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.content-left {
+  margin-right: 16px;
+}
+
+.card {
+  border-top: 3px solid #ffffff;
+  background: var(--card-background);
+  margin-bottom: 16px;
+  margin-right: 16px;
+  width: fit-content;
+  height: fit-content;
+}
+
+.card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  font-weight: 100;
+  border-bottom: 2px solid var(--background-color);
+  padding: 16px 16px;
+  height: 54px;
+  box-sizing: border-box;
+}
+
+.screen-card-title {
+  background: var(--primary-background);
 }
 
 .screen-bg {
-  background: var(--secondary-dark-color);
+  background: var(--primary-background);
+}
+
+.registers-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.registers-card {
+  display: flex;
+  width: calc(var(--register-width) * 8);
+  flex-wrap: wrap;
+
+  padding: 16px 16px;
+}
+
+.register {
+  width: var(--register-width);
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  font-weight: 300;
+  padding: 2px 4px;
+  box-sizing: border-box;
+}
+
+.register-title {
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  font-weight: 100;
+  padding: 2px 4px;
+}
+
+.register-value {
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  font-weight: 300;
+  height: 30px;
+  line-height: 30px;
+  padding-left: 4px;
+  background: var(--primary-dark-color);
+}
+
+.register-i {
+  background: var(--purple-200-color);
+}
+
+.register-i-title {
+  margin-top: 16px;
+}
+
+.pc-card {
+  flex: 1;
+}
+
+.pc-value {
+  padding: 16px;
+  font-family: "Roboto Mono", monospace;
+  font-size: 32px;
+  font-weight: 300;
+}
+
+.opcodes-board {
+  display: flex;
+  flex-wrap: wrap;
+  width: calc(var(--opcode-width) * 10);
+  background: var(--card-background);
+  padding: 16px 16px;
+}
+.opcodes-size {
+  background: var(--orange-300-color);
+  border-radius: 3px;
+  font-size: 12px;
+  padding: 4px;
+}
+
+.opcode {
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  font-weight: 300;
+  padding: 2px 4px;
+  background: var(--card-background);
+}
+
+.opcode-execute {
+  animation: execute-code 2s linear;
+}
+
+/*******/
+/* Rom */
+/*******/
+.rom {
+  margin-bottom: 16px;
+}
+
+.rom-select {
+  background: var(--card-background);
+  color: #ffffff;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  font-weight: 100;
+  height: 32px;
+}
+
+@keyframes execute-code {
+  0%,
+  30% {
+    background: var(--primary-color);
+  }
+}
+
+@media screen and (min-width: 768px) {
+}
+
+.button-icon {
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+  text-align: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  cursor: pointer;
+  line-height: inherit;
+  margin: 0px 4px;
+  outline: none;
+}
+
+.button-icon .material-icons,
+.button-icon .play-button {
+  opacity: 0.3;
+  transition: opacity 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.button-icon .material-icons:hover,
+.button-icon .play-button:hover {
+  opacity: 1;
+}
+
+.screen-controls-container {
+  display: flex;
+}
+
+.screen-controls-buttons {
+  display: flex;
+}
+
+.screen-controls-buttons.hide {
+  display: none;
+}
+
+.cycles-per-frame-input {
+  background: var(--background-color);
+  border-style: solid;
+  border: 1px solid rgb(166, 166, 166);
+  border-radius: 5px;
+  color: #fff;
+  padding-left: 16px;
+  margin-right: 8px;
+  width: 35px;
+}
+
+.play-button {
+  display: inline-block;
+  box-sizing: border-box;
+  opacity: 0.3;
+  width: 16px;
+  height: 16px;
+  border-style: solid;
+  border-color: transparent transparent transparent #ffffff;
+  border-width: 8px 0px 8px 16px;
+  margin: 0px 4px;
+  transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition-property: border-style, border-width;
+}
+
+.pause-button {
+  border-style: double;
+  border-width: 0px 0px 0px 16px;
 }

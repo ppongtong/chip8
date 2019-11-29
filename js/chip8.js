@@ -1,5 +1,6 @@
-import { Chip8ScreenSVG } from "./screen-svg.js";
 import { Chip8Canvas } from "./screen-canvas.js";
+import { OpcodesBoard } from "./opcodes-board.js";
+import { ScreenControls } from "./screen-controls.js";
 
 // http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
 
@@ -13,9 +14,11 @@ export class Chip8 {
   // CPU registers: The Chip 8 has 15 8-bit general purpose registers named
   // V0,V1 up to VE. The 16th register is used  for the ‘carry flag’
   V = new Uint8Array(16);
+  changedV = new Set();
 
   // There is an Index register I and a program counter (pc)
   I = 0;
+  iChanged = false;
   pc = 0;
 
   // The graphics of the Chip 8 are black and white
@@ -87,9 +90,23 @@ export class Chip8 {
 
   constructor(screenId) {
     this.display = new Chip8Canvas(screenId);
+    this.controller = new ScreenControls(
+      ".screen-control",
+      this,
+      this.cyclesPerFrame
+    );
+
+    this.renderRegisters();
+    this.renderPc();
+
+    this.opcodesBoard = new OpcodesBoard(".opcodes-card", ".card-title");
   }
 
-  init = () => {
+  setCyclesPerFrame = value => {
+    this.cyclesPerFrame = value;
+  };
+
+  reset = () => {
     this.pc = 0x200; // Program Counter start at 0x200
     this.I = 0;
     this.stack = [];
@@ -104,6 +121,17 @@ export class Chip8 {
 
     this.V = new Uint8Array(16);
     this.memory = new Uint8Array(4096);
+    this.changedV.clear();
+    this.iChanged = false;
+
+    this.start = false;
+    this.pausing = false;
+
+    // clear screen
+    this.opcodesBoard.reset();
+    this.display.clear();
+    this.clearRegisters();
+    this.updatePCRender();
 
     // load fonts
     for (let i = 0; i < this.chip8FontSet.length; i++) {
@@ -116,7 +144,12 @@ export class Chip8 {
   handleKeyDown = e => {
     const keyValue = this.keyCodeMap[e.keyCode];
     if (this.waitForKey) {
+      if (this.V[this.waitForKeyX] !== keyValue) {
+        this.changedV.add(this.waitForKeyX);
+      }
+
       this.V[this.waitForKeyX] = keyValue;
+
       this.waitForKey = false;
     }
     this.key[this.keyCodeMap[e.keyCode]] = true;
@@ -162,35 +195,74 @@ export class Chip8 {
   };
 
   loadProgram = bytes => {
-    for (let i = 0, length = bytes.length; i < length; i++) {
+    this.reset();
+    this.stop();
+
+    this.bytes = bytes;
+    for (let i = 0; i < bytes.length; i++) {
       this.memory[0x200 + i] = bytes[i];
+      if (i % 2 === 1) {
+        this.opcodesBoard.load(
+          bytes[i - 1],
+          bytes[i],
+          (i - 1) / 2,
+          bytes.length
+        );
+      }
+    }
+
+    this.controller.setVisible(true);
+    window.addEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("keyup", this.handleKeyUp);
+  };
+
+  play = () => {
+    if (this.bytes === undefined || this.bytes.length === 0) {
+      return;
+    }
+
+    if (!this.start || this.pausing) {
+      this.pausing = false;
+      this.start = true;
+      this.runAF();
     }
   };
 
-  start = bytes => {
-    console.log(bytes);
-    if (this.start) {
-      this.stop();
+  pause = () => {
+    if (this.bytes === undefined || this.bytes.length === 0) {
+      return;
     }
 
-    this.start = true;
-    this.init();
-    this.loadProgram(bytes);
-    window.addEventListener("keydown", this.handleKeyDown);
-    window.addEventListener("keyup", this.handleKeyUp);
-
-    this.runAF();
+    this.pausing = true;
+    cancelAnimationFrame(this.rAFId);
   };
 
   stop = () => {
+    if (this.bytes === undefined || this.bytes.length === 0) {
+      return;
+    }
+
     window.removeEventListener("keydown", this.handleKeyDown);
     window.removeEventListener("keyup", this.handleKeyUp);
 
     cancelAnimationFrame(this.rAFId);
     this.start = false;
+    this.pausing = false;
+  };
+
+  replay = () => {
+    if (this.bytes === undefined || this.bytes.length === 0) {
+      return;
+    }
+
+    this.loadProgram(this.bytes);
   };
 
   runAF = () => {
+    if (this.pausing) {
+      return;
+    }
+
     for (let i = 0; i < this.cyclesPerFrame; i++) {
       if (this.waitForKey) {
         break;
@@ -198,6 +270,12 @@ export class Chip8 {
       this.executeOpcode();
     }
 
+    this.processAfterExecuteOpcodes();
+
+    this.rAFId = requestAnimationFrame(this.runAF);
+  };
+
+  processAfterExecuteOpcodes = () => {
     // update screen
     if (this.drawFlag) {
       this.display.render(this.gfx);
@@ -207,7 +285,17 @@ export class Chip8 {
     // update timer
     this.updateTimer();
 
-    this.rAFId = requestAnimationFrame(this.runAF);
+    this.updateRegisters();
+    this.updatePCRender();
+  };
+
+  next = () => {
+    if (this.waitForKey) {
+      return;
+    }
+
+    this.executeOpcode();
+    this.processAfterExecuteOpcodes();
   };
 
   executeOpcode = () => {
@@ -215,6 +303,8 @@ export class Chip8 {
     // In chip-8, 1 opcode has 2 bytes long
     // shift first byte by 8 bits (adds 8 zeror)
     // the bitwise OR to merge 2nd byte
+
+    this.opcodesBoard.executeOpcode((this.pc - 0x200) / 2);
     const opcode = (this.memory[this.pc] << 8) | this.memory[this.pc + 1];
 
     // point Programe Counter to next op code
@@ -281,11 +371,19 @@ export class Chip8 {
 
       case 0x6000:
         // 6XNN Set VX = NN
+        if (this.V[x] !== (opcode & 0x00ff)) {
+          this.changedV.add(x);
+        }
+
         this.V[x] = opcode & 0x00ff;
         break;
 
       case 0x7000:
         // 7XNN Add NN to VX (Carry flage is not changed)
+        if (this.V[x] !== this.V[x] + (opcode & 0x00ff)) {
+          this.changedV.add(x);
+        }
+
         this.V[x] += opcode & 0x00ff;
         break;
 
@@ -293,15 +391,28 @@ export class Chip8 {
         const last1 = opcode & 0x000f;
         if (last1 === 0x0000) {
           // 8XY0 set VX to value of VY
+          if (this.V[x] !== this.V[y]) {
+            this.changedV.add(x);
+          }
+
           this.V[x] = this.V[y];
         } else if (last1 === 0x0001) {
           // 8XY1 set VX to VX or VY
+          if (this.V[x] !== (this.V[x] | this.V[y])) {
+            this.changedV.add(x);
+          }
           this.V[x] |= this.V[y];
         } else if (last1 === 0x0002) {
           // 8XY2 set VX to VX and VY
+          if (this.V[x] !== (this.V[x] & this.V[y])) {
+            this.changedV.add(x);
+          }
           this.V[x] &= this.V[y];
         } else if (last1 === 0x0003) {
           // 8XY3 set VX to VX xor VY
+          if (this.V[x] !== (this.V[x] ^ this.V[y])) {
+            this.changedV.add(x);
+          }
           this.V[x] ^= this.V[y];
         } else if (last1 === 0x0004) {
           // 8XY4 Add VY to VX.
@@ -310,22 +421,37 @@ export class Chip8 {
 
           this.V[0xf] = sum > 0xff ? 1 : 0;
           this.V[x] = sum;
+
+          this.changedV.add(x);
+          this.changedV.add(0xf);
         } else if (last1 === 0x0005) {
           // VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
           this.V[0xf] = this.V[x] < this.V[y] ? 0 : 1;
           this.V[x] -= this.V[y];
+
+          this.changedV.add(x);
+          this.changedV.add(0xf);
         } else if (last1 === 0x0006) {
           // Stores the least significant bit of VX in VF and then shifts VX to the right by 1
           this.V[0xf] = this.V[x] & 0x01;
           this.V[x] = this.V[x] >> 1;
+
+          this.changedV.add(x);
+          this.changedV.add(0xf);
         } else if (last1 === 0x0007) {
           // Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't
           this.V[0xf] = this.V[y] < this.V[x] ? 0 : 1;
           this.V[x] = this.V[y] - this.V[x];
+
+          this.changedV.add(x);
+          this.changedV.add(0xf);
         } else if (last1 === 0x000e) {
           // Stores the most significant bit of VX in VF and then shifts VX to the left by 1
           this.V[0xf] = this.V[x] & 0x80; // 10000000
           this.V[x] = this.V[x] << 1;
+
+          this.changedV.add(x);
+          this.changedV.add(0xf);
         }
         break;
 
@@ -339,6 +465,7 @@ export class Chip8 {
       case 0xa000:
         // Sets I to the address NNN.
         this.I = opcode & 0x0fff;
+        this.iChanged = true;
         break;
 
       case 0xb000:
@@ -350,6 +477,7 @@ export class Chip8 {
         // CXNN
         // Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.
         this.V[x] = Math.trunc(Math.random() * 0xff) & (opcode & 0x00ff);
+        this.changedV.add(x);
         break;
 
       case 0xd000:
@@ -399,6 +527,8 @@ export class Chip8 {
             sprite = sprite << 1;
           }
         }
+
+        this.changedV.add(0xf);
         break;
 
       case 0xe000:
@@ -419,6 +549,7 @@ export class Chip8 {
         if (last2 === 0x0007) {
           // Sets VX to the value of the delay timer.
           this.V[x] = this.delayTimer;
+          this.changedV.add(x);
         } else if (last2 === 0x000a) {
           // A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
           this.waitForKeyX = x;
@@ -436,6 +567,7 @@ export class Chip8 {
           // Sets I to the location of the sprite for the character in VX.
           // Characters 0-F (in hexadecimal) are represented by a 4x5 font.
           this.I = this.V[x] * 5; // http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#font
+          this.iChanged = true;
         } else if (last2 === 0x0033) {
           this.memory[this.I] = parseInt(this.V[x] / 100);
           this.memory[this.I + 1] = parseInt((this.V[x] % 100) / 10);
@@ -451,11 +583,77 @@ export class Chip8 {
           // The offset from I is increased by 1 for each value written, but I itself is left unmodified
           for (let i = 0; i <= x; i++) {
             this.V[i] = this.memory[this.I + i];
+            this.changedV.add(i);
           }
         }
 
         break;
       default:
     }
+  };
+
+  createRegister = (title, id, valueClass = "", titleClass = "") => {
+    const div = document.createElement("div");
+    div.className = "register";
+
+    const titleDiv = document.createElement("div");
+    titleDiv.className = `register-title ${titleClass}`;
+    titleDiv.textContent = title;
+    div.appendChild(titleDiv);
+
+    const value = document.createElement("div");
+    value.className = `register-value ${valueClass}`;
+    value.id = id;
+    div.appendChild(value);
+
+    return div;
+  };
+  /**
+   * Render Registers
+   */
+  renderRegisters = () => {
+    const registers = document.querySelector(".registers-card");
+
+    for (let i = 0; i < this.V.length; i++) {
+      const hexId = i.toString(16);
+      registers.appendChild(this.createRegister(`V${hexId}`, `V${i}`));
+    }
+
+    registers.appendChild(
+      this.createRegister("I", "IReg", "register-i", "register-i-title")
+    );
+  };
+
+  clearRegisters = () => {
+    const registers = document.querySelectorAll(".register-value");
+    for (const register of registers) {
+      register.textContent = "";
+    }
+  };
+
+  updateRegisters = () => {
+    for (const i of this.changedV) {
+      const hex = this.V[i].toString(16);
+
+      document.querySelector(`#V${i}`).textContent = `0x${hex}`;
+    }
+
+    if (this.iChanged) {
+      document.querySelector("#IReg").textContent = `0x${this.I.toString(16)}`;
+    }
+
+    this.changedV.clear();
+  };
+
+  renderPc = () => {
+    const pcContainer = document.querySelector(".pc-card-content");
+    const div = document.createElement("div");
+    div.className = "pc-value";
+    div.id = "pc-value";
+    pcContainer.appendChild(div);
+  };
+
+  updatePCRender = () => {
+    document.querySelector("#pc-value").textContent = this.pc;
   };
 }

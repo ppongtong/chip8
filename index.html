@@ -10,17 +10,17 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="manifest" href="/manifest.json" />
     <link
-      href="https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900"
+      href="https://fonts.googleapis.com/css?family=Material+Icons|Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900|Roboto+Mono:400,100,300,500"
       rel="stylesheet"
     />
-    <link href="/css/reset.css" rel="stylesheet" />
-    <link href="/css/main.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/main.css" />
     <title>JIG's CHIP8</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div>
-      <div class="toolbar">
+      <div class="header">
         <div>CHIP-8 <span class="font-200">by panhathai</span></div>
         <div>
           <a
@@ -31,27 +31,49 @@
           >
         </div>
       </div>
-      <div class="screen"></div>
+
+      <div class="container">
+        <div class="rom"></div>
+        <div class="content">
+          <div class="content-left">
+            <div class="card">
+              <div class="card-title"><span>OPCODES</span></div>
+              <div class="opcodes-card"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card">
+              <div class="card-title screen-card-title">
+                <span>SCREEN</span>
+                <div class="screen-control"></div>
+              </div>
+              <div class="screen"></div>
+            </div>
+
+            <div class="registers-container">
+              <div class="card">
+                <div class="card-title"><span>REGISTERS</span></div>
+                <div class="registers-card"></div>
+              </div>
+
+              <div class="card pc-card">
+                <div class="card-title"><span>PC</span></div>
+                <div class="pc-card-content"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script type="module">
+      import { RomSelector } from "./js/rom-selector.js";
       import { Chip8 } from "./js/chip8.js";
-      const chip8 = new Chip8(".screen");
+      import { ScreenControls } from "./js/screen-controls.js";
 
-      // var request = new XMLHttpRequest();
-      // request.onload = function() {
-      //   if (request.response) {
-      //     chip8.start(new Uint8Array(request.response));
-      //   }
-      // };
-      // request.open("GET", "rom/IBMLogo.ch8", true);
-      // request.responseType = "arraybuffer";
-      // request.send();
-      fetch("rom/Pong.ch8")
-        .then(response => response.arrayBuffer())
-        .then(data => {
-          chip8.start(new Uint8Array(data));
-        });
+      const chip8 = new Chip8(".screen");
+      const selector = new RomSelector(".rom", chip8);
     </script>
   </body>
 </html>
