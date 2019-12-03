@@ -38,14 +38,15 @@ export class OpcodesBoard {
     this.size.innerText = `${size}bytes`;
   };
 
-  executeOpcode = index => {
-    const opcodeElement = document.getElementById(`opcode-${index}`);
-    opcodeElement.classList.remove("opcode-execute");
-    opcodeElement.classList.add("opcode-execute");
-    window.setTimeout(() => {
-      requestAnimationFrame(() => {
-        opcodeElement.classList.remove("opcode-execute");
-      });
-    }, 2000);
+  executeOpcodes = indexes => {
+    // requestAnimationFrame(() => {
+    for (let index of indexes) {
+      const opcodeElement = document.getElementById(`opcode-${index}`);
+      opcodeElement.className =
+        opcodeElement.className === "opcode opcode-execute"
+          ? "opcode opcode-execute-2"
+          : "opcode opcode-execute";
+    }
+    // });
   };
 }

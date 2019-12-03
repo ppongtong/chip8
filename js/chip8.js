@@ -71,19 +71,19 @@ export class Chip8 {
     49: 0x1, // 1
     50: 0x2, // 2
     51: 0x3, // 3
-    52: 0x4, // 4
-    81: 0x5, // Q
-    87: 0x6, // W
-    69: 0x7, // E
-    82: 0x8, // R
-    65: 0x9, // A
-    83: 0xa, // S
-    68: 0xb, // D
-    70: 0xc, // F
-    90: 0xd, // Z
-    88: 0xe, // X
-    67: 0xf, // C
-    86: 0x10 // V
+    52: 0xc, // 4
+    81: 0x4, // Q
+    87: 0x5, // W
+    69: 0x6, // E
+    82: 0xd, // R
+    65: 0x7, // A
+    83: 0x8, // S
+    68: 0x9, // D
+    70: 0xe, // F
+    90: 0xa, // Z
+    88: 0x0, // X
+    67: 0xb, // C
+    86: 0xf // V
   };
 
   cyclesPerFrame = 10;
@@ -263,19 +263,20 @@ export class Chip8 {
       return;
     }
 
+    const boardIndexes = new Set();
     for (let i = 0; i < this.cyclesPerFrame; i++) {
       if (this.waitForKey) {
         break;
       }
-      this.executeOpcode();
+      boardIndexes.add(this.executeOpcode());
     }
 
-    this.processAfterExecuteOpcodes();
+    this.processAfterExecuteOpcodes(boardIndexes);
 
     this.rAFId = requestAnimationFrame(this.runAF);
   };
 
-  processAfterExecuteOpcodes = () => {
+  processAfterExecuteOpcodes = boardIndexes => {
     // update screen
     if (this.drawFlag) {
       this.display.render(this.gfx);
@@ -287,6 +288,7 @@ export class Chip8 {
 
     this.updateRegisters();
     this.updatePCRender();
+    this.opcodesBoard.executeOpcodes(boardIndexes);
   };
 
   next = () => {
@@ -294,8 +296,7 @@ export class Chip8 {
       return;
     }
 
-    this.executeOpcode();
-    this.processAfterExecuteOpcodes();
+    this.processAfterExecuteOpcodes([this.executeOpcode()]);
   };
 
   executeOpcode = () => {
@@ -304,7 +305,7 @@ export class Chip8 {
     // shift first byte by 8 bits (adds 8 zeror)
     // the bitwise OR to merge 2nd byte
 
-    this.opcodesBoard.executeOpcode((this.pc - 0x200) / 2);
+    const currentBoardIndex = (this.pc - 0x200) / 2;
     const opcode = (this.memory[this.pc] << 8) | this.memory[this.pc + 1];
 
     // point Programe Counter to next op code
@@ -590,6 +591,8 @@ export class Chip8 {
         break;
       default:
     }
+
+    return currentBoardIndex;
   };
 
   createRegister = (title, id, valueClass = "", titleClass = "") => {
@@ -633,13 +636,11 @@ export class Chip8 {
 
   updateRegisters = () => {
     for (const i of this.changedV) {
-      const hex = this.V[i].toString(16);
-
-      document.querySelector(`#V${i}`).textContent = `0x${hex}`;
+      document.querySelector(`#V${i}`).textContent = this.getHex(this.V[i], 2);
     }
 
     if (this.iChanged) {
-      document.querySelector("#IReg").textContent = `0x${this.I.toString(16)}`;
+      document.querySelector("#IReg").textContent = this.getHex(this.I, 4);
     }
 
     this.changedV.clear();
@@ -654,6 +655,11 @@ export class Chip8 {
   };
 
   updatePCRender = () => {
-    document.querySelector("#pc-value").textContent = this.pc;
+    document.querySelector("#pc-value").textContent = this.getHex(this.pc, 4);
+  };
+
+  getHex = (num, digits) => {
+    const hex = num.toString(16);
+    return `${"0".repeat(digits - hex.length)}${hex}`;
   };
 }

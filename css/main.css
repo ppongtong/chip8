@@ -171,6 +171,10 @@ a {
   animation: execute-code 2s linear;
 }
 
+.opcode-execute-2 {
+  animation: execute-code-2 2s linear;
+}
+
 /*******/
 /* Rom */
 /*******/
@@ -188,6 +192,13 @@ a {
 }
 
 @keyframes execute-code {
+  0%,
+  30% {
+    background: var(--primary-color);
+  }
+}
+
+@keyframes execute-code-2 {
   0%,
   30% {
     background: var(--primary-color);
