@@ -302,13 +302,12 @@ export class Chip8 {
   executeOpcode = () => {
     // Fetch Opcode
     // In chip-8, 1 opcode has 2 bytes long
-    // shift first byte by 8 bits (adds 8 zeror)
+    // shift first byte by 8 bits (adds 8 zeros)
     // the bitwise OR to merge 2nd byte
-
     const currentBoardIndex = (this.pc - 0x200) / 2;
     const opcode = (this.memory[this.pc] << 8) | this.memory[this.pc + 1];
 
-    // point Programe Counter to next op code
+    // point Programe Counter to next op code (2 bytes)
     this.pc += 2;
 
     // _ x _ _
@@ -616,10 +615,13 @@ export class Chip8 {
    */
   renderRegisters = () => {
     const registers = document.querySelector(".registers-card");
+    const registersVGroup = document.createElement("div");
+    registersVGroup.className = "registers-v-group";
+    registers.appendChild(registersVGroup);
 
     for (let i = 0; i < this.V.length; i++) {
       const hexId = i.toString(16);
-      registers.appendChild(this.createRegister(`V${hexId}`, `V${i}`));
+      registersVGroup.appendChild(this.createRegister(`V${hexId}`, `V${i}`));
     }
 
     registers.appendChild(

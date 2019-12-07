@@ -44,6 +44,11 @@ a {
   justify-content: space-between;
 }
 
+.container-center {
+  display: flex;
+  justify-content: center;
+}
+
 .container {
   padding: 16px 16px;
 }
@@ -83,6 +88,12 @@ a {
   background: var(--primary-background);
 }
 
+.screen {
+  background: var(--primary-background);
+  display: flex;
+  justify-content: center;
+}
+
 .screen-bg {
   background: var(--primary-background);
 }
@@ -93,11 +104,13 @@ a {
 }
 
 .registers-card {
+  padding: 16px 16px;
+}
+
+.registers-v-group {
   display: flex;
   width: calc(var(--register-width) * 8);
   flex-wrap: wrap;
-
-  padding: 16px 16px;
 }
 
 .register {
@@ -191,23 +204,6 @@ a {
   height: 32px;
 }
 
-@keyframes execute-code {
-  0%,
-  30% {
-    background: var(--primary-color);
-  }
-}
-
-@keyframes execute-code-2 {
-  0%,
-  30% {
-    background: var(--primary-color);
-  }
-}
-
-@media screen and (min-width: 768px) {
-}
-
 .button-icon {
   border: none;
   background-color: transparent;
@@ -273,4 +269,39 @@ a {
 .pause-button {
   border-style: double;
   border-width: 0px 0px 0px 16px;
+}
+
+@keyframes execute-code {
+  0%,
+  30% {
+    background: var(--primary-color);
+  }
+}
+
+@keyframes execute-code-2 {
+  0%,
+  30% {
+    background: var(--primary-color);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .container {
+    width: 100%;
+  }
+
+  .content-left {
+    margin-right: 0px;
+    width: 100%;
+  }
+
+  .card {
+    margin-right: 0px;
+    width: 100%;
+  }
+
+  .opcodes-board,
+  .registers-v-group {
+    width: 100%;
+  }
 }
