@@ -24,6 +24,7 @@ export class ScreenControls {
     input.max = 20;
     input.min = 0;
     input.className = "cycles-per-frame-input";
+    input.title = "Cycle per frame";
     input.value = cyclePerFrameInput;
     input.addEventListener("change", this.handleCyclesPerFrameChange);
     controlsDiv.appendChild(input);
