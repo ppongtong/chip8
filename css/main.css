@@ -36,7 +36,7 @@ a {
 .header {
   font-family: "Roboto", sans-serif;
   background: var(--black-color);
-  font-weight: 100;
+  font-weight: 500;
 
   padding: 16px 16px;
 
@@ -83,7 +83,7 @@ a {
   align-items: center;
   font-family: "Roboto", sans-serif;
   font-size: 16px;
-  font-weight: 100;
+  font-weight: 300;
   border-bottom: 2px solid var(--background-color);
   padding: 16px 16px;
   height: 54px;
