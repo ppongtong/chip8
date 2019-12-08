@@ -39,7 +39,6 @@ export class OpcodesBoard {
   };
 
   executeOpcodes = indexes => {
-    // requestAnimationFrame(() => {
     for (let index of indexes) {
       const opcodeElement = document.getElementById(`opcode-${index}`);
       opcodeElement.className =
@@ -47,6 +46,5 @@ export class OpcodesBoard {
           ? "opcode opcode-execute-2"
           : "opcode opcode-execute";
     }
-    // });
   };
 }
