@@ -34,7 +34,7 @@ export class RomSelector {
       return;
     }
 
-    const data = await (await fetch(`/rom/${value}.ch8`)).arrayBuffer();
+    const data = await (await fetch(`rom/${value}.ch8`)).arrayBuffer();
     this.chip8.loadProgram(new Uint8Array(data));
   };
 }
