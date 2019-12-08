@@ -223,7 +223,7 @@ a {
 .button-icon .material-icons,
 .button-icon .play-button {
   opacity: 0.3;
-  transition: opacity 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+  transition: all 0.3s linear;
 }
 
 .button-icon .material-icons:hover,
@@ -272,7 +272,6 @@ a {
   border-color: transparent transparent transparent #ffffff;
   border-width: 8px 0px 8px 16px;
   margin: 0px 4px;
-  transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transition-property: border-style, border-width;
 }
 
