@@ -63,8 +63,20 @@ export class ScreenControls {
   }
 
   resetPlayButton = () => {
+    if (this.playPauseButton.title === "play") {
+      return;
+    }
     this.playPauseButton.title = "play";
     this.playPauseButton.firstElementChild.classList.remove("pause-button");
+  };
+
+  setToPauseButton = () => {
+    if (this.playPauseButton.title === "pause") {
+      return;
+    }
+
+    this.playPauseButton.title = "pause";
+    this.playPauseButton.firstElementChild.classList.add("pause-button");
   };
 
   setVisible = visible => {
@@ -79,10 +91,9 @@ export class ScreenControls {
   handlePlayPauseButtonClick = event => {
     const button = event.currentTarget;
     const isPlayButton = button.title === "play";
-    button.title = isPlayButton ? "pause" : "play";
     if (isPlayButton) {
+      this.setToPauseButton();
       this.chip8.play();
-      button.firstElementChild.classList.add("pause-button");
     } else {
       this.resetPlayButton();
       this.chip8.pause();

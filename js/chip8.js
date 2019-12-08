@@ -214,6 +214,9 @@ export class Chip8 {
     this.controller.setVisible(true);
     window.addEventListener("keydown", this.handleKeyDown);
     window.addEventListener("keyup", this.handleKeyUp);
+
+    this.controller.setToPauseButton();
+    this.play();
   };
 
   play = () => {
