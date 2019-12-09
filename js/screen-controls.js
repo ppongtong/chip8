@@ -19,16 +19,20 @@ export class ScreenControls {
     const controlsDiv = document.createElement("div");
     controlsDiv.className = "screen-controls-container";
 
-    const input = document.createElement("input");
-    input.type = "number";
-    input.max = 20;
-    input.min = 0;
-    input.className = "cycles-per-frame-input";
-    input.title = "Cycle per frame";
-    input.value = cyclePerFrameInput;
+    const frameInput = document.createElement("select");
+    frameInput.className = "cycles-per-frame-input";
+    frameInput.title = "Cycle per frame";
 
-    input.addEventListener("change", this.handleCyclesPerFrameChange);
-    controlsDiv.appendChild(input);
+    [1, 5, 10, 20, 30].forEach(item => {
+      const option = document.createElement("option");
+      option.value = item;
+      option.innerText = item;
+      frameInput.appendChild(option);
+    });
+    frameInput.value = cyclePerFrameInput;
+
+    frameInput.addEventListener("change", this.handleCyclesPerFrameChange);
+    controlsDiv.appendChild(frameInput);
 
     container.appendChild(controlsDiv);
 
@@ -62,12 +66,17 @@ export class ScreenControls {
     nextButton.addEventListener("click", this.handleNext);
   }
 
+  focus = () => {
+    this.playPauseButton.focus();
+  };
+
   resetPlayButton = () => {
     if (this.playPauseButton.title === "play") {
       return;
     }
     this.playPauseButton.title = "play";
     this.playPauseButton.firstElementChild.classList.remove("pause-button");
+    this.playPauseButton.focus();
   };
 
   setToPauseButton = () => {
@@ -77,6 +86,7 @@ export class ScreenControls {
 
     this.playPauseButton.title = "pause";
     this.playPauseButton.firstElementChild.classList.add("pause-button");
+    this.playPauseButton.focus();
   };
 
   setVisible = visible => {
@@ -102,7 +112,6 @@ export class ScreenControls {
 
   handleReplay = () => {
     this.chip8.replay();
-    this.resetPlayButton();
   };
 
   handleNext = () => {

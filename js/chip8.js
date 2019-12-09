@@ -104,6 +104,7 @@ export class Chip8 {
 
   setCyclesPerFrame = value => {
     this.cyclesPerFrame = value;
+    this.controller.focus();
   };
 
   reset = () => {
@@ -142,6 +143,10 @@ export class Chip8 {
   };
 
   handleKeyDown = e => {
+    if (!this.start || this.pausing) {
+      return;
+    }
+
     const keyValue = this.keyCodeMap[e.keyCode];
     if (this.waitForKey) {
       if (this.V[this.waitForKeyX] !== keyValue) {
@@ -156,6 +161,10 @@ export class Chip8 {
   };
 
   handleKeyUp = e => {
+    if (!this.start || this.pausing) {
+      return;
+    }
+
     this.key[this.keyCodeMap[e.keyCode]] = false;
   };
 
@@ -194,7 +203,7 @@ export class Chip8 {
     }, 100);
   };
 
-  loadProgram = bytes => {
+  loadProgram = (bytes, shouldPlay = true) => {
     this.reset();
     this.stop();
 
@@ -212,11 +221,15 @@ export class Chip8 {
     }
 
     this.controller.setVisible(true);
-    window.addEventListener("keydown", this.handleKeyDown);
-    window.addEventListener("keyup", this.handleKeyUp);
+    window.addEventListener("keydown", this.handleKeyDown, true);
+    window.addEventListener("keyup", this.handleKeyUp, true);
 
-    this.controller.setToPauseButton();
-    this.play();
+    if (shouldPlay) {
+      this.controller.setToPauseButton();
+      this.play();
+    } else {
+      this.controller.resetPlayButton();
+    }
   };
 
   play = () => {
@@ -245,8 +258,8 @@ export class Chip8 {
       return;
     }
 
-    window.removeEventListener("keydown", this.handleKeyDown);
-    window.removeEventListener("keyup", this.handleKeyUp);
+    window.removeEventListener("keydown", this.handleKeyDown, true);
+    window.removeEventListener("keyup", this.handleKeyUp, true);
 
     cancelAnimationFrame(this.rAFId);
     this.start = false;
@@ -258,7 +271,7 @@ export class Chip8 {
       return;
     }
 
-    this.loadProgram(this.bytes);
+    this.loadProgram(this.bytes, !this.pausing);
   };
 
   runAF = () => {
