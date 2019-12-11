@@ -320,7 +320,7 @@ export class Chip8 {
     // In chip-8, 1 opcode has 2 bytes long
     // shift first byte by 8 bits (adds 8 zeros)
     // the bitwise OR to merge 2nd byte
-    const currentBoardIndex = (this.pc - 0x200) / 2;
+    const currentBoardIndex = Math.floor((this.pc - 0x200) / 2);
     const opcode = (this.memory[this.pc] << 8) | this.memory[this.pc + 1];
 
     // point Programe Counter to next op code (2 bytes)
@@ -640,9 +640,11 @@ export class Chip8 {
       registersVGroup.appendChild(this.createRegister(`V${hexId}`, `V${i}`));
     }
 
-    registers.appendChild(
-      this.createRegister("I", "IReg", "register-i", "register-i-title")
-    );
+    const iCardContent = document.querySelector(".i-card-content");
+    const iReg = document.createElement("div");
+    iReg.className = "register-i";
+    iReg.id = "IReg";
+    iCardContent.appendChild(iReg);
   };
 
   clearRegisters = () => {
@@ -650,15 +652,17 @@ export class Chip8 {
     for (const register of registers) {
       register.textContent = "";
     }
+
+    document.getElementById("IReg").textContent = "";
   };
 
   updateRegisters = () => {
     for (const i of this.changedV) {
-      document.querySelector(`#V${i}`).textContent = this.getHex(this.V[i], 2);
+      document.getElementById(`V${i}`).textContent = this.getHex(this.V[i], 2);
     }
 
     if (this.iChanged) {
-      document.querySelector("#IReg").textContent = this.getHex(this.I, 4);
+      document.getElementById("IReg").textContent = this.getHex(this.I, 4);
     }
 
     this.changedV.clear();

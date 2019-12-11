@@ -109,6 +109,14 @@ a {
   flex-wrap: wrap;
 }
 
+.registers-right {
+  flex: 1;
+}
+
+.registers-right .card {
+  width: 100%;
+}
+
 .registers-card {
   padding: 16px 16px;
 }
@@ -149,15 +157,16 @@ a {
   background: var(--purple-200-color);
 }
 
-.register-i-title {
-  margin-top: 16px;
+.pc-value {
+  background: var(--yellow-300-color);
 }
 
 .pc-card {
   flex: 1;
 }
 
-.pc-value {
+.pc-value,
+.register-i {
   padding: 16px;
   font-family: "Roboto Mono", monospace;
   font-size: 32px;
@@ -171,6 +180,7 @@ a {
   background: var(--card-background);
   padding: 16px 16px;
 }
+
 .opcodes-size {
   background: var(--orange-300-color);
   border-radius: 3px;
@@ -294,7 +304,7 @@ a {
     margin-right: 0px;
     width: 100%;
   }
-
+  .content-right,
   .opcodes-board,
   .registers-v-group {
     width: 100%;
