@@ -107,6 +107,7 @@ a {
 .registers-container {
   display: flex;
   flex-wrap: wrap;
+  margin-right: 16px;
 }
 
 .registers-right {
@@ -302,6 +303,10 @@ a {
   .content-left {
     margin-right: 0px;
     width: 100%;
+  }
+
+  .registers-container {
+    margin-right: 0px;
   }
 
   .card {

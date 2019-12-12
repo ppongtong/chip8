@@ -203,7 +203,7 @@ export class Chip8 {
     }, 100);
   };
 
-  loadProgram = (bytes, shouldPlay = true) => {
+  loadProgram = (bytes, shouldPlay) => {
     this.reset();
     this.stop();
 
@@ -610,17 +610,17 @@ export class Chip8 {
     return currentBoardIndex;
   };
 
-  createRegister = (title, id, valueClass = "", titleClass = "") => {
+  createRegister = (title, id) => {
     const div = document.createElement("div");
     div.className = "register";
 
     const titleDiv = document.createElement("div");
-    titleDiv.className = `register-title ${titleClass}`;
+    titleDiv.className = "register-title";
     titleDiv.textContent = title;
     div.appendChild(titleDiv);
 
     const value = document.createElement("div");
-    value.className = `register-value ${valueClass}`;
+    value.className = "register-value";
     value.id = id;
     div.appendChild(value);
 

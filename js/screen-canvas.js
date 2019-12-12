@@ -10,9 +10,9 @@ const debounce = fn => {
 };
 
 export class Chip8Canvas {
-  constructor(screenSelector, rows = 32, columns = 64) {
-    this.rows = rows;
-    this.columns = columns;
+  constructor(screenSelector) {
+    this.rows = 32;
+    this.columns = 64;
     this.cell = 10;
 
     const screenContainer = document.querySelector(screenSelector);
