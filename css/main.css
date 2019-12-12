@@ -5,6 +5,7 @@
   --orange-300-color: #ff6859;
   --yellow-300-color: #ffcf44;
   --purple-200-color: #b15dff;
+  --light-blue-500-color: #03a9f4;
 
   --register-width: 50px;
 
@@ -119,7 +120,7 @@ a {
 }
 
 .registers-card {
-  padding: 16px 16px;
+  padding: 16px 16px 32px 16px;
 }
 
 .registers-v-group {
@@ -135,23 +136,24 @@ a {
   font-weight: 300;
   padding: 2px 4px;
   box-sizing: border-box;
+  margin-bottom: 11px;
 }
 
 .register-title {
   font-family: "Roboto Mono", monospace;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 100;
   padding: 2px 4px;
 }
 
 .register-value {
   font-family: "Roboto Mono", monospace;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 300;
   height: 30px;
   line-height: 30px;
   padding-left: 4px;
-  background: var(--primary-dark-color);
+  background: var(--light-blue-500-color);
 }
 
 .register-i {
@@ -159,7 +161,7 @@ a {
 }
 
 .pc-value {
-  background: var(--yellow-300-color);
+  background: var(--primary-color);
 }
 
 .pc-card {
@@ -170,8 +172,9 @@ a {
 .register-i {
   padding: 16px;
   font-family: "Roboto Mono", monospace;
-  font-size: 32px;
+  font-size: 18px;
   font-weight: 300;
+  height: 50px;
 }
 
 .opcodes-board {

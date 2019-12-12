@@ -99,7 +99,10 @@ export class Chip8 {
     this.renderRegisters();
     this.renderPc();
 
-    this.opcodesBoard = new OpcodesBoard(".opcodes-card", ".card-title");
+    this.opcodesBoard = new OpcodesBoard(
+      ".opcodes-card",
+      ".opcodes-card-title"
+    );
   }
 
   setCyclesPerFrame = value => {
