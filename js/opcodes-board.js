@@ -35,7 +35,7 @@ export class OpcodesBoard {
     opcode.textContent = opcodeText;
 
     this.board.appendChild(opcode);
-    this.size.innerText = `${size} bytes`;
+    this.size.textContent = `${size} bytes`;
   };
 
   executeOpcodes = indexes => {

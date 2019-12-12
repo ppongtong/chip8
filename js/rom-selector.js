@@ -20,7 +20,7 @@ export class RomSelector {
     for (const file of files) {
       const option = document.createElement("option");
       option.value = file;
-      option.innerText = file ? file : "Select ROM";
+      option.textContent = file ? file : "Select ROM";
       select.appendChild(option);
     }
 

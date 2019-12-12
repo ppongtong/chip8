@@ -5,7 +5,7 @@ const createButton = (icon, title) => {
 
   const materialIcon = document.createElement("i");
   materialIcon.className = "material-icons";
-  materialIcon.innerText = icon;
+  materialIcon.textContent = icon;
 
   button.appendChild(materialIcon);
   return button;
@@ -26,7 +26,7 @@ export class ScreenControls {
     [1, 5, 10, 20, 30].forEach(item => {
       const option = document.createElement("option");
       option.value = item;
-      option.innerText = item;
+      option.textContent = item;
       frameInput.appendChild(option);
     });
     frameInput.value = cyclePerFrameInput;
