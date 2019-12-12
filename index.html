@@ -38,7 +38,7 @@
             <div class="rom"></div>
             <div class="screen-control"></div>
           </div>
-
+          <div class="rom-description"></div>
           <div class="content">
             <div class="content-left">
               <div class="card">
@@ -85,7 +85,7 @@
       import { ScreenControls } from "./js/screen-controls.js";
 
       const chip8 = new Chip8(".screen");
-      const selector = new RomSelector(".rom", chip8);
+      const selector = new RomSelector(".rom", ".rom-description", chip8);
     </script>
   </body>
 </html>
