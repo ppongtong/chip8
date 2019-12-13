@@ -61,8 +61,9 @@ export class Chip8Canvas {
       return;
     }
 
-    this.bits = bits;
     this.clear();
+    this.bits = bits;
+
     for (let i = 0; i < bits.length; i++) {
       const x = (i % this.columns) * this.cell;
       const y = Math.trunc(i / this.columns) * this.cell;
