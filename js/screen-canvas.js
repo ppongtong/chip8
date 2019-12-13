@@ -13,7 +13,8 @@ export class Chip8Canvas {
   constructor(screenSelector) {
     this.rows = 32;
     this.columns = 64;
-    this.cell = 10;
+    this.cell = 0;
+    this.innerWidth = 0;
 
     const screenContainer = document.querySelector(screenSelector);
 
@@ -30,20 +31,29 @@ export class Chip8Canvas {
   }
 
   onWindowSizeChange = () => {
+    let newCell = this.cell;
     if (window.innerWidth >= 900) {
-      this.cell = 10;
+      newCell = 10;
     } else {
-      this.cell = Math.min(Math.trunc(window.innerWidth / 64), 10);
+      newCell = Math.min(Math.trunc(window.innerWidth / 64), 10);
     }
 
-    this.canvas.width = this.columns * this.cell;
-    this.canvas.height = this.rows * this.cell;
+    if (newCell !== this.cell) {
+      this.cell = newCell;
+      this.canvas.width = this.columns * this.cell;
+      this.canvas.height = this.rows * this.cell;
+
+      if (this.bits) {
+        this.render(this.bits);
+      }
+    }
   };
 
   clear = () => {
     if (this.ctx) {
       this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
+    this.bits = undefined;
   };
 
   render = bits => {
@@ -51,6 +61,7 @@ export class Chip8Canvas {
       return;
     }
 
+    this.bits = bits;
     this.clear();
     for (let i = 0; i < bits.length; i++) {
       const x = (i % this.columns) * this.cell;
